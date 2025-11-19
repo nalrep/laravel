@@ -24,6 +24,10 @@ class NalrepServiceProvider extends ServiceProvider
             $this->publishes([
                 __DIR__.'/../config/nalrep.php' => config_path('nalrep.php'),
             ], 'config');
+
+            $this->publishes([
+                __DIR__.'/../resources/views' => resource_path('views/vendor/nalrep'),
+            ], 'views');
         }
     }
 }

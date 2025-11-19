@@ -130,6 +130,13 @@ The easiest way to use Nalrep is via the provided Blade component. It renders a 
 <x-nalrep::input />
 ```
 
+### Customizing the View
+You can publish the views to customize the frontend component:
+```bash
+php artisan vendor:publish --tag=views --provider="Nalrep\NalrepServiceProvider"
+```
+This will publish the views to `resources/views/vendor/nalrep`. You can edit `components/input.blade.php` to match your application's design.
+
 ### Programmatic Usage
 You can use the `Nalrep` facade to generate reports programmatically in your controllers or commands.
 
