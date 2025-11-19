@@ -20,7 +20,7 @@
 
 1.  **Require the package** via Composer:
     ```bash
-    composer require nalrep/nalrep
+    composer require nalrep/laravel
     ```
 
 2.  **Publish the configuration** file:
