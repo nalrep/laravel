@@ -1,0 +1,10 @@
+/vendor
+/node_modules
+.env
+composer.lock
+package-lock.json
+phpunit.xml
+/testbench
+.DS_Store
+.idea
+.vscode
