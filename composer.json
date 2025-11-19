@@ -5,9 +5,22 @@
     "license": "MIT",
     "authors": [
         {
-            "name": "Nalrep Team",
-            "email": "team@nalrep.com"
+            "name": "Emmanuel Arhinful",
+            "email": "kofibusy@gmail.com"
         }
+    ],
+    "keywords": [
+        "laravel",
+        "ai",
+        "reporting",
+        "nlp",
+        "database",
+        "eloquent",
+        "openai",
+        "llm",
+        "natural language",
+        "sql",
+        "query builder"
     ],
     "require": {
         "php": "^8.2",
