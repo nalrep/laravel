@@ -11,9 +11,12 @@ class ReportController extends Controller
 {
     public function generate(Request $request)
     {
+        $allowedFormats = config('nalrep.allowed_formats', ['html', 'json']);
+        $allowedFormatsString = implode(',', $allowedFormats);
+
         $request->validate([
             'prompt' => 'required|string|max:1000',
-            'format' => 'nullable|string|in:json,html,pdf',
+            'format' => 'nullable|string|in:' . $allowedFormatsString,
         ]);
 
         $prompt = $request->input('prompt');

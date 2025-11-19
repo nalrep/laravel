@@ -3,7 +3,6 @@
 namespace Nalrep\Schema;
 
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Cache;
 
@@ -59,8 +58,6 @@ class SchemaManager
         // Determine which Laravel tables to exclude
         $tablesToExclude = array_merge($excludedCustomTables, $excludedLaravelTables);
 
-        Log::info('exclude: ', $tablesToExclude);
-
         // Filter tables
         $tables = array_values(array_filter($tables, function ($table) use ($tablesToExclude) {
             return !in_array($table, $tablesToExclude);
@@ -83,11 +80,43 @@ class SchemaManager
 
     protected function getForeignKeys($table)
     {
-        // Laravel Schema builder doesn't easily expose foreign keys in a standard way across drivers
-        // We might need raw queries or a package like doctrine/dbal if available
-        // For now, we will try to infer or use a raw query for MySQL/Postgres
-        
-        // Placeholder for FK extraction logic
+        $connection = Schema::connection($this->connection)->getConnection();
+        $driver = $connection->getDriverName();
+
+        if ($driver === 'sqlite') {
+            $keys = $connection->select("PRAGMA foreign_key_list({$table})");
+            return array_map(function($key) {
+                return [
+                    'column' => $key->from,
+                    'foreign_table' => $key->table,
+                    'foreign_column' => $key->to,
+                ];
+            }, $keys);
+        }
+
+        if ($driver === 'mysql') {
+            $dbName = $connection->getDatabaseName();
+            $keys = $connection->select("
+                SELECT 
+                    COLUMN_NAME as `column`, 
+                    REFERENCED_TABLE_NAME as foreign_table, 
+                    REFERENCED_COLUMN_NAME as foreign_column 
+                FROM information_schema.KEY_COLUMN_USAGE 
+                WHERE TABLE_SCHEMA = ? 
+                AND TABLE_NAME = ? 
+                AND REFERENCED_TABLE_NAME IS NOT NULL
+            ", [$dbName, $table]);
+
+            return array_map(function($key) {
+                return [
+                    'column' => $key->column,
+                    'foreign_table' => $key->foreign_table,
+                    'foreign_column' => $key->foreign_column,
+                ];
+            }, $keys);
+        }
+
+        // Fallback or other drivers can be added here
         return [];
     }
 }

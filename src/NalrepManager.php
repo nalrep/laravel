@@ -3,12 +3,14 @@
 namespace Nalrep;
 
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Cache;
 use Nalrep\Schema\SchemaManager;
 use Nalrep\AI\Agent;
 use Nalrep\Query\Validation;
 use Nalrep\Query\Executor;
 use Nalrep\Output\Formatter;
 use OpenAI;
+use Nalrep\Schema\ModelScanner;
 
 class NalrepManager
 {
@@ -18,6 +20,7 @@ class NalrepManager
     protected $validator;
     protected $executor;
     protected $formatter;
+    protected $modelScanner;
 
     public function __construct($app)
     {
@@ -29,6 +32,7 @@ class NalrepManager
         $this->resolveAgent();
         
         $this->validator = new Validation(config('nalrep.safety', []));
+        $this->modelScanner = new ModelScanner(config('nalrep.model_paths', ['app/Models']));
         $this->executor = new Executor();
         $this->formatter = new Formatter();
     }
@@ -58,17 +62,24 @@ class NalrepManager
         // 1. Get Schema
         $schemaSummary = $this->schema->getSchemaSummary();
 
+        // 2. Get Models
+        $models = Cache::remember(config('nalrep.cache.key', 'nalrep_schema_v1') . '_models', config('nalrep.cache.ttl', 3600), function () {
+            return $this->modelScanner->getModels();
+        });
+
         Log::info(json_encode($schemaSummary, JSON_PRETTY_PRINT));
+        Log::info(json_encode($models, JSON_PRETTY_PRINT));
         
-        // 2. Generate Query via AI
+        // 3. Generate Query via AI
         $this->agent->setSchema($schemaSummary);
-        $queryCode = $this->agent->generateQuery($prompt);
+        $this->agent->setModels($models);
+        $query = $this->agent->generateQuery($prompt);
         
         // 3. Validate
-        $this->validator->validate($queryCode);
+        $this->validator->validate($query);
         
         // 4. Execute
-        $results = $this->executor->execute($queryCode);
+        $results = $this->executor->execute($query);
         
         // 5. Format
         return $this->formatter->format($results, $format);

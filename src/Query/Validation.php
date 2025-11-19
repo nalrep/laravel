@@ -37,20 +37,23 @@ class Validation
                 }
             }
         }
-
-        return true;
     }
 
-    protected function validateSql(string $sql)
+    protected function validateSql(string $query)
     {
-        $forbidden = ['DELETE', 'UPDATE', 'INSERT', 'DROP', 'TRUNCATE', 'ALTER', 'GRANT', 'REVOKE'];
-        
-        foreach ($forbidden as $word) {
-            if (stripos($sql, $word) !== false) {
-                throw new Exception("Destructive SQL command '$word' is not allowed.");
+        $forbiddenKeywords = [
+            'DELETE', 'DROP', 'TRUNCATE', 'UPDATE', 'INSERT', 'ALTER', 'GRANT', 'REVOKE'
+        ];
+
+        $upperQuery = strtoupper($query);
+
+        foreach ($forbiddenKeywords as $keyword) {
+            if (strpos($upperQuery, $keyword) !== false) {
+                 if (!($this->config['allow_destructive'] ?? false)) { // Added null coalescing for safety
+                     throw new \Exception("Destructive query detected: $keyword");
+                 }
             }
         }
-
         return true;
     }
 }

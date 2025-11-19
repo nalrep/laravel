@@ -13,6 +13,14 @@ interface Agent
     public function setSchema(array $schema): self;
 
     /**
+     * Set the models context for the agent.
+     *
+     * @param array $models
+     * @return self
+     */
+    public function setModels(array $models): self;
+
+    /**
      * Generate a query based on the prompt.
      *
      * @param string $prompt

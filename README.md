@@ -1,126 +1,172 @@
-# Nalrep
+# Nalrep: Natural Language Reporting for Laravel
 
-**Nalrep** is a powerful Laravel package that enables **Natural Language Reporting** for your application. It leverages AI (OpenAI, OpenRouter, or custom drivers) to intelligently understand your database schema and generate safe, accurate SQL or Query Builder queries from plain English prompts.
+**Nalrep** (Natural Language Reporting) is a powerful Laravel package that empowers your application with AI-driven reporting capabilities. It allows users to generate complex database reports using simple natural language prompts, converting them into safe, executable Laravel Query Builder code.
 
-Give your users the power to ask questions like *"Show me total sales by product category for last month"* and get instant results, visualized beautifully.
+---
 
-## Features
+## 🚀 Features
 
-*   **Natural Language to Data**: Convert English questions into database queries.
-*   **Schema Aware**: Automatically inspects your database schema (tables, columns) to provide context to the AI.
-*   **Smart Filtering**: Strictly scopes schema scanning to your application's database, ignoring system tables.
-*   **Safety First**: Enforces read-only queries (SELECT only) and validates generated code to prevent destructive operations.
-*   **Multiple AI Drivers**:
-    *   **OpenAI**: Native support for OpenAI's GPT models.
-    *   **OpenRouter**: Access a wide range of models (Claude, Llama, Mistral) via OpenRouter.
-    *   **Custom**: Implement your own driver easily.
-*   **Smart Formatting**: Automatically detects data structures to render results as:
-    *   **Tables**: For structured datasets.
-    *   **Lists**: For simple collections.
-    *   **Text**: For single values or summaries.
-    *   **PDF**: Export reports to PDF (via dompdf).
-*   **Ready-to-Use UI**: Includes a drop-in Blade component `<x-nalrep::input />` for instant integration.
+-   **Natural Language to SQL**: Convert questions like "Show me top selling products last month" into database queries.
+-   **Safe Execution**: Built-in validation ensures only read-only queries are executed.
+-   **Context-Aware**: Automatically scans your database schema and Eloquent models to provide the AI with accurate context.
+-   **Eloquent Integration**: Intelligently uses your application's Eloquent models (e.g., `\App\Models\Sale`) when available.
+-   **Flexible Output**: Returns results as JSON, HTML tables, or PDF reports.
+-   **Multi-Provider Support**: Works with OpenAI, OpenRouter, and Ollama (local LLMs).
+-   **Highly Configurable**: Fine-tune schema visibility, model scanning, and auto-imports.
 
-## Installation
+---
 
-1.  **Require the package**:
+## 📦 Installation
+
+1.  **Require the package** via Composer:
     ```bash
     composer require nalrep/nalrep
     ```
 
-2.  **Publish Configuration**:
+2.  **Publish the configuration** file:
     ```bash
     php artisan vendor:publish --tag=config --provider="Nalrep\NalrepServiceProvider"
     ```
 
-3.  **Configure Environment**:
-    Add the following to your `.env` file:
+---
 
-    ```env
-    # Choose Driver: openai, openrouter, or custom class
-    NALREP_DRIVER=openrouter
+## ⚙️ Configuration
 
-    # For OpenAI
-    OPENAI_API_KEY=sk-...
-    NALREP_OPENAI_MODEL=gpt-4o
+The configuration file `config/nalrep.php` gives you full control over how Nalrep behaves.
 
-    # For OpenRouter
-    OPENROUTER_API_KEY=sk-or-...
-    NALREP_OPENROUTER_MODEL=openai/gpt-3.5-turbo
-    ```
-
-### Configuration
-
-You can customize the schema scanning behavior in `config/nalrep.php`:
+### 1. AI Provider
+Choose your AI driver. Supported drivers: `openai`, `openrouter`, `ollama`.
 
 ```php
-// Exclude specific tables from being sent to the AI
-'excluded_laravel_tables' => '*', // '*' excludes all default Laravel tables, or provide an array ['migrations', 'users']
-'excluded_tables' => ['audit_logs', 'admin_users'], // Custom tables to exclude
+'driver' => env('NALREP_DRIVER', 'openai'),
+
+'openai' => [
+    'api_key' => env('OPENAI_API_KEY'),
+    'model' => env('NALREP_OPENAI_MODEL', 'gpt-4-turbo'),
+],
 ```
 
-## Usage
+### 2. Schema Exclusion
+Control which database tables are visible to the AI. This is crucial for security and token optimization.
 
-### 1. Using the Blade Component
+```php
+// Tables to exclude from the schema sent to the AI
+'excluded_laravel_tables' => [
+    'migrations', 'failed_jobs', 'password_reset_tokens', 'sessions', 
+    'cache', 'cache_locks', 'jobs', 'job_batches', 'sqlite_sequence'
+],
 
-The easiest way to use Nalrep is to drop the input component into any Blade view:
+'excluded_tables' => [
+    'admin_users', 'audit_logs', 'sensitive_data'
+],
+```
+
+### 3. Model Scanning
+Nalrep scans your application for Eloquent models to help the AI write cleaner, more "Laravel-like" queries using your actual classes.
+
+```php
+// Directories to scan for Eloquent models
+'model_paths' => [
+    'app/Models',
+],
+```
+*The AI is instructed to use the Fully Qualified Class Name (FQCN) (e.g., `\App\Models\User`) to avoid "Class Not Found" errors.*
+
+### 4. Common Classes (Auto-Imports)
+Define classes that should be automatically available in the generated code execution environment. This prevents "Class 'Carbon' not found" errors.
+
+```php
+'common_classes' => [
+    'Carbon\Carbon',
+    'Illuminate\Support\Facades\DB',
+],
+
+// Frontend Component Settings
+'allowed_formats' => ['html', 'json'],
+'example_prompts' => [
+    'Total sales last month',
+    'Top 5 customers by revenue',
+    'New users this week',
+],
+```
+*With this config, the AI can write `Carbon::now()` directly.*
+
+### 5. Safety Settings
+Configure the safety guardrails.
+
+```php
+'safety' => [
+    'allow_destructive' => false, // MUST be false in production. Blocks DELETE, UPDATE, DROP, etc.
+    'max_rows' => 1000,           // Limit result set size to prevent memory exhaustion.
+],
+```
+
+---
+
+## 🔒 Security Architecture
+
+Nalrep takes security seriously. We use a **JSON-based Query Interpreter** to ensure safe execution.
+
+### 1. No `eval()`
+We do **not** use PHP's `eval()` function. Instead, the AI generates a structured JSON definition of the query (e.g., `{"method": "where", "args": [...]}`). This JSON is parsed and executed by a strict interpreter that only allows valid Query Builder methods.
+
+### 2. Read-Only Enforcement
+The **Validator** inspects the JSON structure before execution and blocks any destructive methods such as `delete`, `update`, `insert`, `drop`, or `truncate`.
+
+### 3. Schema Filtering
+By using `excluded_tables`, you ensure that the AI never sees the structure of sensitive tables.
+
+### 4. Static Date Generation
+The AI is provided with the current date and generates static date strings (e.g., "2024-01-01"), eliminating the need to execute arbitrary PHP date logic.
+
+---
+
+## 💻 Usage
+
+### Blade Component
+The easiest way to use Nalrep is via the provided Blade component. It renders a simple input form for users to type their request.
 
 ```blade
 <x-nalrep::input />
 ```
 
-This renders a search bar where users can type their questions. The results will be displayed automatically.
-
-### 2. Programmatic Usage
-
-You can use the `Nalrep` facade to generate reports programmatically:
+### Programmatic Usage
+You can use the `Nalrep` facade to generate reports programmatically in your controllers or commands.
 
 ```php
 use Nalrep\Facades\Nalrep;
 
-$report = Nalrep::generate("What are the top 5 selling products?");
-
-// Returns HTML string
-echo $report;
-```
-
-### 3. Customizing the Agent
-
-You can create a custom AI agent by implementing the `Nalrep\Contracts\Agent` interface:
-
-```php
-namespace App\AI;
-
-use Nalrep\Contracts\Agent;
-
-class MyCustomAgent implements Agent
+public function report()
 {
-    public function setSchema(array $schema): Agent
-    {
-        // Store schema
-        return $this;
-    }
-
-    public function generateQuery(string $prompt): string
-    {
-        // Call your AI service here
-        return "DB::table('users')->get();";
-    }
+    $prompt = "Show me the total sales for each product in 2024";
+    
+    // Returns HTML string of the report table
+    $html = Nalrep::generate($prompt, 'html');
+    
+    return view('reports.show', compact('html'));
 }
 ```
 
-Then update your `.env`:
-```env
-NALREP_DRIVER=App\AI\MyCustomAgent
+---
+
+## 🔌 Extensibility
+
+### Custom AI Agents
+You can implement your own AI driver by implementing the `Nalrep\Contracts\Agent` interface and registering it in the config.
+
+```php
+use Nalrep\Contracts\Agent;
+
+class MyCustomAgent implements Agent {
+    // ... implementation
+}
+
+// config/nalrep.php
+'driver' => MyCustomAgent::class,
 ```
 
-## Security
+---
 
-Nalrep is designed with security in mind:
-*   **Read-Only**: The query validator blocks `DELETE`, `UPDATE`, `INSERT`, `DROP`, `ALTER`, and other destructive keywords.
-*   **Sanitization**: AI-generated code is sanitized to remove PHP tags and potentially unsafe function calls before execution.
-*   **Schema Scoping**: The schema scanner is strictly scoped to your configured database connection to prevent leaking information about other databases on the same server.
+## 📄 License
 
-## License
-
-The MIT License (MIT). Please see [License File](LICENSE.md) for more information.
+The MIT License (MIT).

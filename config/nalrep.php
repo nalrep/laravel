@@ -61,6 +61,34 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Model Scanning
+    |--------------------------------------------------------------------------
+    |
+    | Define directories to scan for Eloquent models.
+    | The AI will be provided with the Fully Qualified Class Name (FQCN)
+    | for models found in these directories.
+    |
+    */
+    'model_paths' => [
+        'app/Models',
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Common Classes
+    |--------------------------------------------------------------------------
+    |
+    | Define classes that should be automatically imported (via 'use' statements)
+    | into the generated code execution environment.
+    |
+    */
+    'common_classes' => [
+        'Carbon\Carbon',
+        'Illuminate\Support\Facades\DB',
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Cache Settings
     |--------------------------------------------------------------------------
     |
@@ -69,5 +97,21 @@ return [
         'enabled' => true,
         'ttl' => 3600, // 1 hour
         'key' => 'nalrep_schema_v1',
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Frontend Settings
+    |--------------------------------------------------------------------------
+    |
+    | Configuration for the <x-nalrep::input /> component.
+    |
+    */
+    'allowed_formats' => ['html', 'json'], // Formats available in the frontend dropdown
+
+    'example_prompts' => [
+        'Total sales last month',
+        'Top 5 customers by revenue',
+        'New users this week',
     ],
 ];
