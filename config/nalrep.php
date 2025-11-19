@@ -46,6 +46,6 @@ return [
     'cache' => [
         'enabled' => true,
         'ttl' => 3600, // 1 hour
-        'key' => 'narlrep_schema_v1',
+        'key' => 'nalrep_schema_v1',
     ],
 ];

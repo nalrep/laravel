@@ -1,12 +1,12 @@
-<div class="narlrep-container p-4 bg-white rounded shadow">
-    <form action="{{ route('narlrep.generate') }}" method="POST" class="flex flex-col gap-4">
+<div class="nalrep-container p-4 bg-white rounded shadow">
+    <form action="{{ route('nalrep.generate') }}" method="POST" class="flex flex-col gap-4">
         @csrf
-        <label for="narlrep-prompt" class="font-bold text-lg">Generate Report</label>
+        <label for="nalrep-prompt" class="font-bold text-lg">Generate Report</label>
         <div class="flex gap-2">
             <input 
                 type="text" 
                 name="prompt" 
-                id="narlrep-prompt" 
+                id="nalrep-prompt" 
                 class="flex-1 border border-gray-300 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="e.g. Show me top customers from last month"
                 required

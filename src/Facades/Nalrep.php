@@ -1,10 +1,10 @@
 <?php
 
-namespace Narlrep\Facades;
+namespace Nalrep\Facades;
 
 use Illuminate\Support\Facades\Facade;
 
-class Narlrep extends Facade
+class Nalrep extends Facade
 {
     protected static function getFacadeAccessor()
     {

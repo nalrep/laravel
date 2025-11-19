@@ -1,11 +1,11 @@
 <?php
 
-namespace Narlrep\Http\Controllers;
+namespace Nalrep\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
-use Narlrep\Facades\Narlrep; // We haven't created the Facade yet, but we will
-use Narlrep\NarlrepManager;
+use Nalrep\Facades\Nalrep; // We haven't created the Facade yet, but we will
+use Nalrep\NalrepManager;
 
 class ReportController extends Controller
 {

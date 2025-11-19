@@ -1,6 +1,6 @@
 <?php
 
-namespace Narlrep\Output;
+namespace Nalrep\Output;
 
 use Illuminate\Support\Collection;
 

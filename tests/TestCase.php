@@ -1,16 +1,16 @@
 <?php
 
-namespace Narlrep\Tests;
+namespace Nalrep\Tests;
 
 use Orchestra\Testbench\TestCase as Orchestra;
-use Narlrep\NarlrepServiceProvider;
+use Nalrep\NalrepServiceProvider;
 
 class TestCase extends Orchestra
 {
     protected function getPackageProviders($app)
     {
         return [
-            NarlrepServiceProvider::class,
+            NalrepServiceProvider::class,
         ];
     }
 

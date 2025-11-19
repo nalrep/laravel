@@ -1,6 +1,6 @@
 <?php
 
-namespace Narlrep\Schema;
+namespace Nalrep\Schema;
 
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;

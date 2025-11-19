@@ -1,6 +1,6 @@
 <?php
 
-namespace Narlrep\Contracts;
+namespace Nalrep\Contracts;
 
 interface Agent
 {

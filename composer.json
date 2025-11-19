@@ -1,12 +1,12 @@
 {
-    "name": "narlrep/narlrep",
+    "name": "nalrep/nalrep",
     "description": "AI-powered, schema-aware, dynamic report generation for Laravel",
     "type": "library",
     "license": "MIT",
     "authors": [
         {
-            "name": "Narlrep Team",
-            "email": "team@narlrep.com"
+            "name": "Nalrep Team",
+            "email": "team@nalrep.com"
         }
     ],
     "require": {
@@ -22,16 +22,16 @@
     },
     "autoload": {
         "psr-4": {
-            "Narlrep\\": "src/"
+            "Nalrep\\": "src/"
         }
     },
     "extra": {
         "laravel": {
             "providers": [
-                "Narlrep\\NarlrepServiceProvider"
+                "Nalrep\\NalrepServiceProvider"
             ],
             "aliases": {
-                "Narlrep": "Narlrep\\Facades\\Narlrep"
+                "Nalrep": "Nalrep\\Facades\\Nalrep"
             }
         }
     },

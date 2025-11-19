@@ -1,16 +1,16 @@
 <?php
 
-namespace Narlrep;
+namespace Nalrep;
 
 use Illuminate\Support\Facades\Log;
-use Narlrep\Schema\SchemaManager;
-use Narlrep\AI\Agent;
-use Narlrep\Query\Validation;
-use Narlrep\Query\Executor;
-use Narlrep\Output\Formatter;
+use Nalrep\Schema\SchemaManager;
+use Nalrep\AI\Agent;
+use Nalrep\Query\Validation;
+use Nalrep\Query\Executor;
+use Nalrep\Output\Formatter;
 use OpenAI;
 
-class NarlrepManager
+class NalrepManager
 {
     protected $app;
     protected $schema;
@@ -40,16 +40,16 @@ class NarlrepManager
         if ($driver === 'openai') {
             $apiKey = config('narlrep.openai.api_key');
             $client = OpenAI::client($apiKey ?: 'test-key');
-            $this->agent = new \Narlrep\AI\Drivers\OpenAIAgent($client);
+            $this->agent = new \Nalrep\AI\Drivers\OpenAIAgent($client);
         } elseif ($driver === 'openrouter') {
             $apiKey = config('narlrep.openrouter.api_key');
             $model = config('narlrep.openrouter.model');
-            $this->agent = new \Narlrep\AI\Drivers\OpenRouterAgent($apiKey, $model);
+            $this->agent = new \Nalrep\AI\Drivers\OpenRouterAgent($apiKey, $model);
         } elseif (class_exists($driver)) {
             // Custom driver class
             $this->agent = new $driver();
         } else {
-            throw new \Exception("Unknown Narlrep driver: {$driver}");
+            throw new \Exception("Unknown Nalrep driver: {$driver}");
         }
     }
 

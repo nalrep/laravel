@@ -1,9 +1,9 @@
 <?php
 
-namespace Narlrep\AI\Drivers;
+namespace Nalrep\AI\Drivers;
 
 use Illuminate\Support\Facades\Log;
-use Narlrep\Contracts\Agent;
+use Nalrep\Contracts\Agent;
 use OpenAI\Client;
 use Illuminate\Support\Facades\Http;
 

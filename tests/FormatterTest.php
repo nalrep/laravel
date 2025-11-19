@@ -1,8 +1,8 @@
 <?php
 
-namespace Narlrep\Tests;
+namespace Nalrep\Tests;
 
-use Narlrep\Output\Formatter;
+use Nalrep\Output\Formatter;
 
 class FormatterTest extends TestCase
 {

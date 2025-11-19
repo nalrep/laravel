@@ -1,8 +1,8 @@
 <?php
 
-namespace Narlrep\Tests;
+namespace Nalrep\Tests;
 
-use Narlrep\Query\Validation;
+use Nalrep\Query\Validation;
 
 class ValidationTest extends TestCase
 {

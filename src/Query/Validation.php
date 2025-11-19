@@ -1,6 +1,6 @@
 <?php
 
-namespace Narlrep\Query;
+namespace Nalrep\Query;
 
 use Exception;
 
