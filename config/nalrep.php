@@ -6,7 +6,7 @@ return [
     | AI Provider
     |--------------------------------------------------------------------------
     |
-    | Supported: "openai", "ollama"
+    | Supported: "openai", "ollama", "openrouter"
     |
     */
     'driver' => env('NALREP_DRIVER', 'openai'),
@@ -44,14 +44,6 @@ return [
     |
     | Define tables that should be excluded from the schema sent to the AI.
     |
-    | 'excluded_laravel_tables':
-    |   - '*' : Exclude all default Laravel tables (migrations, jobs, etc.)
-    |   - []  : Do not exclude any default tables
-    |   - ['migrations', 'users'] : Exclude specific default tables
-    |
-    | 'excluded_tables':
-    |   - List of custom table names to exclude.
-    |
     */
     'excluded_laravel_tables' => [
         'migrations', 'failed_jobs', 'password_reset_tokens', 'sessions', 
@@ -78,8 +70,8 @@ return [
     | Common Classes
     |--------------------------------------------------------------------------
     |
-    | Define classes that should be automatically imported (via 'use' statements)
-    | into the generated code execution environment.
+    | Define classes that should be recognized by the JSON interpreter.
+    | These are primarily for reference, as the interpreter handles execution safely.
     |
     */
     'common_classes' => [
