@@ -49,6 +49,16 @@ Give your users the power to ask questions like *"Show me total sales by product
     NALREP_OPENROUTER_MODEL=openai/gpt-3.5-turbo
     ```
 
+### Configuration
+
+You can customize the schema scanning behavior in `config/nalrep.php`:
+
+```php
+// Exclude specific tables from being sent to the AI
+'excluded_laravel_tables' => '*', // '*' excludes all default Laravel tables, or provide an array ['migrations', 'users']
+'excluded_tables' => ['audit_logs', 'admin_users'], // Custom tables to exclude
+```
+
 ## Usage
 
 ### 1. Using the Blade Component

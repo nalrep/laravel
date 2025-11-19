@@ -28,22 +28,22 @@ class NalrepManager
         
         $this->resolveAgent();
         
-        $this->validator = new Validation(config('narlrep.safety', []));
+        $this->validator = new Validation(config('nalrep.safety', []));
         $this->executor = new Executor();
         $this->formatter = new Formatter();
     }
 
     protected function resolveAgent()
     {
-        $driver = config('narlrep.driver', 'openai');
+        $driver = config('nalrep.driver', 'openai');
 
         if ($driver === 'openai') {
-            $apiKey = config('narlrep.openai.api_key');
+            $apiKey = config('nalrep.openai.api_key');
             $client = OpenAI::client($apiKey ?: 'test-key');
             $this->agent = new \Nalrep\AI\Drivers\OpenAIAgent($client);
         } elseif ($driver === 'openrouter') {
-            $apiKey = config('narlrep.openrouter.api_key');
-            $model = config('narlrep.openrouter.model');
+            $apiKey = config('nalrep.openrouter.api_key');
+            $model = config('nalrep.openrouter.model');
             $this->agent = new \Nalrep\AI\Drivers\OpenRouterAgent($apiKey, $model);
         } elseif (class_exists($driver)) {
             // Custom driver class

@@ -21,7 +21,7 @@ class ReportController extends Controller
 
         // For now, we instantiate the manager directly if Facade is not ready
         // In real app, we use dependency injection
-        $manager = app('narlrep');
+        $manager = app('nalrep');
         
         // Use the manager to generate the report
         try {
@@ -34,6 +34,6 @@ class ReportController extends Controller
             return response()->json(['report' => $report]);
         }
 
-        return view('narlrep::result', ['report' => $report]);
+        return view('nalrep::result', ['report' => $report]);
     }
 }

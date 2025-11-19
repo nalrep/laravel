@@ -3,6 +3,7 @@
 namespace Nalrep\Schema;
 
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Cache;
 
@@ -17,7 +18,7 @@ class SchemaManager
 
     public function getSchemaSummary()
     {
-        return Cache::remember(config('narlrep.cache.key', 'narlrep_schema_v1'), config('narlrep.cache.ttl', 3600), function () {
+        return Cache::remember(config('nalrep.cache.key', 'nalrep_schema_v1'), config('nalrep.cache.ttl', 3600), function () {
             return $this->introspectDatabase();
         });
     }
@@ -51,12 +52,18 @@ class SchemaManager
 
         $tables = Schema::connection($this->connection)->getTableListing();
 
-        // Filter out system tables
-        $tables = array_values(array_filter($tables, function ($table) {
-            return !in_array($table, [
-                'migrations', 'failed_jobs', 'password_reset_tokens', 'sessions', 
-                'cache', 'cache_locks', 'jobs', 'job_batches', 'sqlite_sequence'
-            ]);
+        // Get exclusion configs
+        $excludedLaravelTables = config('nalrep.excluded_laravel_tables', []);
+        $excludedCustomTables = config('nalrep.excluded_tables', []);
+
+        // Determine which Laravel tables to exclude
+        $tablesToExclude = array_merge($excludedCustomTables, $excludedLaravelTables);
+
+        Log::info('exclude: ', $tablesToExclude);
+
+        // Filter tables
+        $tables = array_values(array_filter($tables, function ($table) use ($tablesToExclude) {
+            return !in_array($table, $tablesToExclude);
         }));
 
         return $tables;

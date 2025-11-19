@@ -8,6 +8,6 @@ class Nalrep extends Facade
 {
     protected static function getFacadeAccessor()
     {
-        return 'narlrep';
+        return 'nalrep';
     }
 }
