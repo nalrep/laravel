@@ -93,7 +93,7 @@ class OpenRouterAgent implements Agent
         // But for now, let's just strip lines starting with 'use '
         $code = preg_replace('/^use\s+.*;$/m', '', $code);
         
-        Log::info("AI builder: $content");
+        // Log::info("AI builder: $content");
 
         return trim($code);
     }

@@ -16,7 +16,7 @@ class Executor
 
     public function execute(string $query, string $mode = 'builder')
     {
-        Log::info("query: $query");
+        // Log::info("query: $query");
 
         if ($mode === 'builder') {
             return $this->executeJson($query);

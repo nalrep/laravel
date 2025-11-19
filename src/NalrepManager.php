@@ -67,7 +67,7 @@ class NalrepManager
             return $this->modelScanner->getModels();
         });
 
-        Log::info(json_encode($schemaSummary, JSON_PRETTY_PRINT));
+        // Log::info(json_encode($schemaSummary, JSON_PRETTY_PRINT));
         
         // 3. Generate Query via AI
         $this->agent->setSchema($schemaSummary);
