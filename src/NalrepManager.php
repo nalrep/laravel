@@ -40,15 +40,22 @@ class NalrepManager
     protected function resolveAgent()
     {
         $driver = config('nalrep.driver', 'openai');
+        $timeout = config('nalrep.timeout', 120);
 
         if ($driver === 'openai') {
             $apiKey = config('nalrep.openai.api_key');
-            $client = OpenAI::client($apiKey ?: 'test-key');
-            $this->agent = new \Nalrep\AI\Drivers\OpenAIAgent($client);
+            $model = config('nalrep.openai.model');
+            
+            $factory = OpenAI::factory()
+                ->withApiKey($apiKey ?: 'test-key')
+                ->withHttpClient(new \GuzzleHttp\Client(['timeout' => $timeout]));
+
+            $client = $factory->make();
+            $this->agent = new \Nalrep\AI\Drivers\OpenAIAgent($client, $model);
         } elseif ($driver === 'openrouter') {
             $apiKey = config('nalrep.openrouter.api_key');
             $model = config('nalrep.openrouter.model');
-            $this->agent = new \Nalrep\AI\Drivers\OpenRouterAgent($apiKey, $model);
+            $this->agent = new \Nalrep\AI\Drivers\OpenRouterAgent($apiKey, $model, $timeout);
         } elseif (class_exists($driver)) {
             // Custom driver class
             $this->agent = new $driver();

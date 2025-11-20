@@ -14,11 +14,17 @@ class OpenRouterAgent implements Agent
     protected $models = [];
     protected $apiKey;
     protected $model;
+    protected $timeout;
 
-    public function __construct(string $apiKey, string $model = 'openai/gpt-3.5-turbo')
+    public function __construct(string $apiKey, string $model, int $timeout = 120)
     {
+        if (empty($model)) {
+            throw new \InvalidArgumentException('Model must be provided.');
+        }
+
         $this->apiKey = $apiKey;
         $this->model = $model;
+        $this->timeout = $timeout;
     }
 
     public function setSchema(array $schema): Agent
@@ -54,7 +60,7 @@ class OpenRouterAgent implements Agent
         $systemPrompt .= "IMPORTANT: Return ONLY the JSON string. No markdown, no explanations.";
 
         // OpenRouter uses OpenAI-compatible API
-        $response = Http::withHeaders([
+        $response = Http::timeout($this->timeout)->withHeaders([
             'Authorization' => 'Bearer ' . $this->apiKey,
             'HTTP-Referer' => config('app.url'), // Required by OpenRouter
             'X-Title' => config('app.name'), // Optional

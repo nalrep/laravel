@@ -13,8 +13,12 @@ class OpenAIAgent implements Agent
     protected $models = [];
     protected $model;
 
-    public function __construct(Client $client, string $model = 'gpt-4-turbo')
+    public function __construct(Client $client, string $model)
     {
+        if (empty($model)) {
+            throw new \InvalidArgumentException('Model must be provided.');
+        }
+
         $this->client = $client;
         $this->model = $model;
     }

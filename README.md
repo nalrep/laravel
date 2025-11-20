@@ -42,11 +42,20 @@ Choose your AI driver. Supported drivers: `openai`, `openrouter`, `ollama`.
 
 'openai' => [
     'api_key' => env('OPENAI_API_KEY'),
-    'model' => env('NALREP_OPENAI_MODEL', 'gpt-4-turbo'),
+    'model' => env('NALREP_OPENAI_MODEL', 'gpt-4-turbo'), // Model is required
 ],
 ```
+*Note: You must provide a valid model name. The package enforces explicit model configuration.*
 
-### 2. Schema Exclusion
+### 2. Request Timeout
+Set the maximum duration for AI requests to prevent hanging processes.
+
+```php
+// Timeout in seconds (default: 120)
+'timeout' => env('NALREP_TIMEOUT', 120),
+```
+
+### 3. Schema Exclusion
 Control which database tables are visible to the AI. This is crucial for security and token optimization.
 
 ```php
@@ -61,7 +70,7 @@ Control which database tables are visible to the AI. This is crucial for securit
 ],
 ```
 
-### 3. Model Scanning
+### 4. Model Scanning
 Nalrep scans your application for Eloquent models to help the AI write cleaner, more "Laravel-like" queries using your actual classes.
 
 ```php
@@ -72,7 +81,7 @@ Nalrep scans your application for Eloquent models to help the AI write cleaner, 
 ```
 *The AI is instructed to use the Fully Qualified Class Name (FQCN) (e.g., `\App\Models\User`) to avoid "Class Not Found" errors.*
 
-### 4. Common Classes (Auto-Imports)
+### 5. Common Classes (Auto-Imports)
 Define classes that should be automatically available in the generated code execution environment. This prevents "Class 'Carbon' not found" errors.
 
 ```php
@@ -91,7 +100,7 @@ Define classes that should be automatically available in the generated code exec
 ```
 *With this config, the AI can write `Carbon::now()` directly.*
 
-### 5. Safety Settings
+### 6. Safety Settings
 Configure the safety guardrails.
 
 ```php
