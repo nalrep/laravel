@@ -6,7 +6,7 @@
 
 ## � Example Report
 
-![Sample Report](https://raw.githubusercontent.com/yourusername/nalrep/main/docs/sample-report.png)
+![Sample Report](https://github.com/user-attachments/assets/f3dc22b8-173d-47dd-8219-440e3827680a)
 
 *Generate beautiful reports from natural language queries like "Top 5 customers by total purchase revenue"*
 
