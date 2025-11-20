@@ -35,6 +35,9 @@ class Executor
             throw new \Exception("Invalid JSON query: " . json_last_error_msg());
         }
 
+        // Extract description if present
+        $description = $data['description'] ?? null;
+
         // Resolve Root (Model or DB Table)
         if (isset($data['model']) && class_exists($data['model'])) {
             $query = $data['model']::query();
@@ -53,10 +56,16 @@ class Executor
         if ($query instanceof \Illuminate\Database\Eloquent\Builder || 
             $query instanceof \Illuminate\Database\Query\Builder ||
             $query instanceof \Illuminate\Database\Eloquent\Relations\Relation) {
-            return $query->get();
+            $results = $query->get();
+        } else {
+            $results = $query;
         }
 
-        return $query;
+        // Return both data and description
+        return [
+            'data' => $results,
+            'description' => $description,
+        ];
     }
 
     protected function applySteps(&$query, array $steps)

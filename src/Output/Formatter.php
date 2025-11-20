@@ -6,37 +6,52 @@ use Illuminate\Support\Collection;
 
 class Formatter
 {
-    public function format($data, string $format = 'json')
+    public function format($data, string $format = 'json', ?string $description = null)
     {
         if ($data instanceof Collection) {
             $data = $data->toArray();
         }
 
         return match ($format) {
-            'json' => $this->toJson($data),
-            'html' => $this->toHtml($data),
-            'pdf' => $this->toPdf($data),
-            default => $this->toJson($data),
+            'json' => $this->toJson($data, $description),
+            'html' => $this->toHtml($data, $description),
+            'pdf' => $this->toPdf($data, $description),
+            default => $this->toJson($data, $description),
         };
     }
 
-    protected function toJson($data)
+    protected function toJson($data, ?string $description = null)
     {
-        return json_encode($data, JSON_PRETTY_PRINT);
+        $response = ['data' => $data];
+        
+        if ($description) {
+            $response['description'] = $description;
+        }
+        
+        return json_encode($response, JSON_PRETTY_PRINT);
     }
 
-    protected function toHtml($data)
+    protected function toHtml($data, ?string $description = null)
     {
+        $html = '';
+        
+        // Add description if present
+        if ($description) {
+            $html .= '<div class="mb-4 p-4 bg-blue-50 border-l-4 border-blue-500 text-blue-700">';
+            $html .= '<p class="font-medium">' . htmlspecialchars($description) . '</p>';
+            $html .= '</div>';
+        }
+        
         if (empty($data)) {
-            return '<p>No results found.</p>';
+            return $html . '<p>No results found.</p>';
         }
 
         if ($this->isSimple($data)) {
-            return '<p class="text-lg">' . htmlspecialchars((string) $data) . '</p>';
+            return $html . '<p class="text-lg">' . htmlspecialchars((string) $data) . '</p>';
         }
 
         if ($this->isList($data)) {
-            $html = '<ul class="list-disc pl-5">';
+            $html .= '<ul class="list-disc pl-5">';
             foreach ($data as $item) {
                 $html .= '<li>' . htmlspecialchars((string) $item) . '</li>';
             }
@@ -45,7 +60,7 @@ class Formatter
         }
 
         // Default to Table
-        $html = '<table class="table-auto w-full border-collapse border border-gray-200">';
+        $html .= '<table class="table-auto w-full border-collapse border border-gray-200">';
         $html .= '<thead><tr>';
         
         // Normalize first row to get headers
@@ -82,9 +97,9 @@ class Formatter
         return array_is_list($data) && count($data) > 0 && is_scalar($data[0]);
     }
 
-    protected function toPdf($data)
+    protected function toPdf($data, ?string $description = null)
     {
-        $html = $this->toHtml($data);
+        $html = $this->toHtml($data, $description);
         
         $dompdf = new \Dompdf\Dompdf();
         $dompdf->loadHtml($html);

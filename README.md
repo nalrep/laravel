@@ -172,13 +172,63 @@ You can implement your own AI driver by implementing the `Nalrep\Contracts\Agent
 
 ```php
 use Nalrep\Contracts\Agent;
+use Nalrep\AI\PromptBuilder;
 
 class MyCustomAgent implements Agent {
-    // ... implementation
+    protected $schema;
+    protected $models;
+    
+    public function setSchema(array $schema): Agent {
+        $this->schema = $schema;
+        return $this;
+    }
+    
+    public function setModels(array $models): Agent {
+        $this->models = $models;
+        return $this;
+    }
+    
+    public function generateQuery(string $prompt, string $mode = 'builder'): string {
+        // Use the built-in PromptBuilder
+        $promptBuilder = new PromptBuilder();
+        
+        // Optionally add custom instructions
+        $promptBuilder->appendCustomInstructions(
+            "Always include a summary row at the end of results."
+        );
+        
+        $systemPrompt = $promptBuilder->build(
+            $this->schema,
+            $this->models,
+            date('Y-m-d')
+        );
+        
+        // Send to your custom AI model
+        // ...
+    }
 }
 
 // config/nalrep.php
 'driver' => MyCustomAgent::class,
+```
+
+### Using PromptBuilder Standalone
+Developers can also use the `PromptBuilder` class directly for custom implementations:
+
+```php
+use Nalrep\AI\PromptBuilder;
+
+$builder = new PromptBuilder();
+
+// Get just the base prompt
+$basePrompt = $builder->getBasePrompt();
+
+// Or build the complete prompt
+$fullPrompt = $builder->build($schema, $models, date('Y-m-d'));
+
+// Add custom instructions
+$builder->appendCustomInstructions("Focus on performance optimization.");
+$customPrompt = $builder->build($schema, $models, date('Y-m-d'));
 ```
 
 ---

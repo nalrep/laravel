@@ -85,9 +85,13 @@ class NalrepManager
         $this->validator->validate($query);
         
         // 4. Execute
-        $results = $this->executor->execute($query);
+        $result = $this->executor->execute($query);
+        
+        // Extract data and description
+        $data = $result['data'] ?? $result;
+        $description = $result['description'] ?? null;
         
         // 5. Format
-        return $this->formatter->format($results, $format);
+        return $this->formatter->format($data, $format, $description);
     }
 }
