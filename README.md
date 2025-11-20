@@ -4,19 +4,45 @@
 
 ---
 
-## 🚀 Features
+## � Example Report
+
+![Sample Report](https://raw.githubusercontent.com/yourusername/nalrep/main/docs/sample-report.png)
+
+*Generate beautiful reports from natural language queries like "Top 5 customers by total purchase revenue"*
+
+---
+
+## �🚀 Features
 
 -   **Natural Language to SQL**: Convert questions like "Show me top selling products last month" into database queries.
 -   **Safe Execution**: Built-in validation ensures only read-only queries are executed.
 -   **Context-Aware**: Automatically scans your database schema and Eloquent models to provide the AI with accurate context.
--   **Eloquent Integration**: Intelligently uses your application's Eloquent models (e.g., `\App\Models\Sale`) when available.
+-   **Eloquent Integration**: Intelligently uses your application's Eloquent models (e.g., `\\App\\Models\\Sale`) when available.
 -   **Flexible Output**: Returns results as JSON, HTML tables, or PDF reports.
 -   **Multi-Provider Support**: Works with OpenAI, OpenRouter, and Ollama (local LLMs).
 -   **Highly Configurable**: Fine-tune schema visibility, model scanning, and auto-imports.
 
 ---
 
-## 📦 Installation
+## � How It Works Internally
+
+```
+User Prompt
+   ↓
+PromptBuilder → AI Model
+   ↓
+JSON Query Definition
+   ↓
+Validator (read-only, method whitelist)
+   ↓
+Interpreter → Laravel Query Builder
+   ↓
+Result (HTML / JSON / PDF)
+```
+
+---
+
+## �📦 Installation
 
 1.  **Require the package** via Composer:
     ```bash
@@ -25,7 +51,7 @@
 
 2.  **Publish the configuration** file:
     ```bash
-    php artisan vendor:publish --tag=config --provider="Nalrep\NalrepServiceProvider"
+    php artisan vendor:publish --tag=config --provider="Nalrep\\NalrepServiceProvider"
     ```
 
 ---
@@ -42,10 +68,25 @@ Choose your AI driver. Supported drivers: `openai`, `openrouter`, `ollama`.
 
 'openai' => [
     'api_key' => env('OPENAI_API_KEY'),
-    'model' => env('NALREP_OPENAI_MODEL', 'gpt-4-turbo'), // Model is required
+    'model' => env('NALREP_OPENAI_MODEL', 'gpt-4o-mini'), // Required for OpenAI/OpenRouter
+],
+
+'openrouter' => [
+    'api_key' => env('OPENROUTER_API_KEY'),
+    'model' => env('NALREP_OPENROUTER_MODEL', 'openai/gpt-4o-mini'), // Required
 ],
 ```
-*Note: You must provide a valid model name. The package enforces explicit model configuration.*
+
+**Recommended Models:**
+- **OpenAI/OpenRouter:**
+  - `gpt-4o-mini` - Fast and cost-effective (recommended for most use cases)
+  - `gpt-4o` - More powerful for complex queries
+  - `o3-mini` - Optimized for code generation
+- **Ollama (Local):**
+  - `qwen2.5-coder:7b` - Excellent for code generation
+  - `llama3.1:8b` - General purpose
+
+*Note: Model configuration is required when using OpenAI or OpenRouter. Custom agents can define their own model handling.*
 
 ### 2. Request Timeout
 Set the maximum duration for AI requests to prevent hanging processes.
@@ -79,28 +120,42 @@ Nalrep scans your application for Eloquent models to help the AI write cleaner, 
     'app/Models',
 ],
 ```
-*The AI is instructed to use the Fully Qualified Class Name (FQCN) (e.g., `\App\Models\User`) to avoid "Class Not Found" errors.*
+*The AI is instructed to use the Fully Qualified Class Name (FQCN) (e.g., `\\App\\Models\\User`) to avoid "Class Not Found" errors.*
 
 ### 5. Common Classes (Auto-Imports)
-Define classes that should be automatically available in the generated code execution environment. This prevents "Class 'Carbon' not found" errors.
+Define classes that should be automatically available in the generated code execution environment. This prevents common "Class not found" errors.
 
 ```php
 'common_classes' => [
-    'Carbon\Carbon',
-    'Illuminate\Support\Facades\DB',
+    'Carbon\\Carbon',
+    'Illuminate\\Support\\Facades\\DB',
+    // Add any other classes your queries might need
 ],
+```
+*These classes will be automatically available when executing queries, allowing the AI to use them without import statements.*
 
-// Frontend Component Settings
-'allowed_formats' => ['html', 'json'],
+### 6. Frontend Component Settings
+Configure the input component behavior and available formats.
+
+```php
+'allowed_formats' => ['html', 'json', 'pdf'], // Formats available in the dropdown
 'example_prompts' => [
     'Total sales last month',
     'Top 5 customers by revenue',
     'New users this week',
 ],
 ```
-*With this config, the AI can write `Carbon::now()` directly.*
 
-### 6. Safety Settings
+### 7. PDF Display Mode
+Configure how PDF reports are displayed.
+
+```php
+'pdf_display_mode' => env('NALREP_PDF_DISPLAY_MODE', 'inline'),
+// 'inline' - Preview in browser with download button (recommended)
+// 'download' - Direct download
+```
+
+### 8. Safety Settings
 Configure the safety guardrails.
 
 ```php
@@ -142,7 +197,7 @@ The easiest way to use Nalrep is via the provided Blade component. It renders a 
 ### Customizing the View
 You can publish the views to customize the frontend component:
 ```bash
-php artisan vendor:publish --tag=views --provider="Nalrep\NalrepServiceProvider"
+php artisan vendor:publish --tag=views --provider="Nalrep\\NalrepServiceProvider"
 ```
 This will publish the views to `resources/views/vendor/nalrep`. You can edit `components/input.blade.php` to match your application's design.
 
@@ -150,7 +205,7 @@ This will publish the views to `resources/views/vendor/nalrep`. You can edit `co
 You can use the `Nalrep` facade to generate reports programmatically in your controllers or commands.
 
 ```php
-use Nalrep\Facades\Nalrep;
+use Nalrep\\Facades\\Nalrep;
 
 public function report()
 {
@@ -168,11 +223,11 @@ public function report()
 ## 🔌 Extensibility
 
 ### Custom AI Agents
-You can implement your own AI driver by implementing the `Nalrep\Contracts\Agent` interface and registering it in the config.
+You can implement your own AI driver by implementing the `Nalrep\\Contracts\\Agent` interface and registering it in the config.
 
 ```php
-use Nalrep\Contracts\Agent;
-use Nalrep\AI\PromptBuilder;
+use Nalrep\\Contracts\\Agent;
+use Nalrep\\AI\\PromptBuilder;
 
 class MyCustomAgent implements Agent {
     protected $schema;
@@ -203,8 +258,11 @@ class MyCustomAgent implements Agent {
             date('Y-m-d')
         );
         
-        // Send to your custom AI model
-        // ...
+        // Send to your custom AI model (e.g., local Ollama, Anthropic, etc.)
+        $aiCompletion = $this->myAiService->complete($systemPrompt, $prompt);
+        
+        // Return the JSON query definition from the AI
+        return $aiCompletion;
     }
 }
 
@@ -216,7 +274,7 @@ class MyCustomAgent implements Agent {
 Developers can also use the `PromptBuilder` class directly for custom implementations:
 
 ```php
-use Nalrep\AI\PromptBuilder;
+use Nalrep\\AI\\PromptBuilder;
 
 $builder = new PromptBuilder();
 

@@ -110,11 +110,23 @@ return [
     | Configuration for the <x-nalrep::input /> component.
     |
     */
-    'allowed_formats' => ['html', 'json'], // Formats available in the frontend dropdown
+    'allowed_formats' => ['html', 'json', 'pdf'], // Formats available in the frontend dropdown
 
     'example_prompts' => [
         'Total sales last month',
         'Top 5 customers by revenue',
         'New users this week',
     ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | PDF Display Mode
+    |--------------------------------------------------------------------------
+    |
+    | How PDF reports should be displayed:
+    | - 'inline': Preview PDF in the browser with download button (recommended)
+    | - 'download': Directly download the PDF file
+    |
+    */
+    'pdf_display_mode' => env('NALREP_PDF_DISPLAY_MODE', 'inline'),
 ];
