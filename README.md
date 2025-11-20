@@ -1,5 +1,12 @@
 # Nalrep: Natural Language Reporting for Laravel
 
+# Nalrep: Natural Language Reporting for Laravel
+
+[![Latest Stable Version](https://img.shields.io/packagist/v/nalrep/laravel.svg?style=flat&color=4CAF50)](https://packagist.org/packages/nalrep/laravel)
+[![Total Downloads](https://img.shields.io/packagist/dt/nalrep/laravel.svg?style=flat&color=2196F3)](https://packagist.org/packages/nalrep/laravel)
+[![License](https://img.shields.io/packagist/l/nalrep/laravel.svg?style=flat&color=795548)](LICENSE)
+
+
 **Nalrep** (Natural Language Reporting) is a powerful Laravel package that empowers your application with AI-driven reporting capabilities. It allows users to generate complex database reports using simple natural language prompts, converting them into safe, executable Laravel Query Builder code.
 
 ---
