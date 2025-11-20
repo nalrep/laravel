@@ -68,7 +68,7 @@ Choose your AI driver. Supported drivers: `openai`, `openrouter`, `ollama`.
 
 'openai' => [
     'api_key' => env('OPENAI_API_KEY'),
-    'model' => env('NALREP_OPENAI_MODEL', 'gpt-4o-mini'), // Required for OpenAI/OpenRouter
+    'model' => env('NALREP_OPENAI_MODEL', 'gpt-4o-mini'), // Required
 ],
 
 'openrouter' => [
@@ -77,16 +77,10 @@ Choose your AI driver. Supported drivers: `openai`, `openrouter`, `ollama`.
 ],
 ```
 
-**Recommended Models:**
-- **OpenAI/OpenRouter:**
+**Example Models:**
   - `gpt-4o-mini` - Fast and cost-effective (recommended for most use cases)
   - `gpt-4o` - More powerful for complex queries
   - `o3-mini` - Optimized for code generation
-- **Ollama (Local):**
-  - `qwen2.5-coder:7b` - Excellent for code generation
-  - `llama3.1:8b` - General purpose
-
-*Note: Model configuration is required when using OpenAI or OpenRouter. Custom agents can define their own model handling.*
 
 ### 2. Request Timeout
 Set the maximum duration for AI requests to prevent hanging processes.
@@ -216,6 +210,87 @@ public function report()
     
     return view('reports.show', compact('html'));
 }
+```
+
+---
+
+## ⚠️ Error Handling
+
+Nalrep provides comprehensive error handling to help developers and users understand what went wrong.
+
+### Exception Types
+
+Nalrep throws specific exceptions for different error scenarios:
+
+```php
+use Nalrep\Exceptions\{
+    NalrepException,           // Base exception
+    VaguePromptException,      // Prompt is too unclear
+    InvalidPromptException,    // Prompt not related to data reporting
+    QueryGenerationException,  // Cannot generate valid query
+    InvalidJsonException,      // AI returned malformed JSON
+    ValidationException        // Query failed security validation
+};
+```
+
+### Handling Errors in Your Code
+
+```php
+use Nalrep\Facades\Nalrep;
+use Nalrep\Exceptions\VaguePromptException;
+use Nalrep\Exceptions\InvalidPromptException;
+
+try {
+    $report = Nalrep::generate($userPrompt, 'html');
+} catch (VaguePromptException $e) {
+    // User's query was too vague
+    return back()->with('error', $e->getMessage());
+} catch (InvalidPromptException $e) {
+    // User's query wasn't related to data reporting
+    return back()->with('error', 'Please ask for a data report or query.');
+} catch (\Nalrep\Exceptions\NalrepException $e) {
+    // Any other Nalrep-specific error
+    \Log::warning('Nalrep error', ['message' => $e->getMessage()]);
+    return back()->with('error', 'Unable to generate report. Please try rephrasing your query.');
+}
+```
+
+### How Errors Are Surfaced
+
+**In Development (`APP_DEBUG=true`):**
+- Full error messages are displayed
+- Stack traces are available in logs
+- JSON responses include detailed error information
+
+**In Production (`APP_DEBUG=false`):**
+- User-friendly error messages are shown
+- Technical details are logged but not exposed
+- Generic fallback messages for unexpected errors
+
+### AI Error Detection
+
+The AI is instructed to detect and report issues:
+
+- **Vague Prompts**: "Show me data" → AI returns `vague_prompt` error
+- **Invalid Requests**: "What's the weather?" → AI returns `invalid_prompt` error  
+- **Schema Mismatch**: "Show sales from products table" (when table doesn't exist) → AI returns `query_generation_failed` error
+
+### Example Error Responses
+
+**JSON Format:**
+```json
+{
+  "error": true,
+  "type": "VaguePromptException",
+  "message": "Your query is too vague. Please be more specific about what data you want to see."
+}
+```
+
+**HTML Format:**
+```html
+<div class="bg-yellow-50 border border-yellow-200 text-yellow-800 px-4 py-3 rounded">
+  <strong>Unable to generate report:</strong> Your query is too vague...
+</div>
 ```
 
 ---

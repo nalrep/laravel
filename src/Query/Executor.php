@@ -32,7 +32,26 @@ class Executor
         $data = json_decode($json, true);
 
         if (json_last_error() !== JSON_ERROR_NONE) {
-            throw new \Exception("Invalid JSON query: " . json_last_error_msg());
+            throw new \Nalrep\Exceptions\InvalidJsonException(
+                "Invalid JSON query: " . json_last_error_msg()
+            );
+        }
+
+        // Check if AI returned an error response
+        if (isset($data['error'])) {
+            $errorType = $data['error'];
+            $message = $data['message'] ?? 'An error occurred while processing your request.';
+            
+            switch ($errorType) {
+                case 'vague_prompt':
+                    throw new \Nalrep\Exceptions\VaguePromptException($message);
+                case 'invalid_prompt':
+                    throw new \Nalrep\Exceptions\InvalidPromptException($message);
+                case 'query_generation_failed':
+                    throw new \Nalrep\Exceptions\QueryGenerationException($message);
+                default:
+                    throw new \Nalrep\Exceptions\NalrepException($message);
+            }
         }
 
         // Extract description if present
@@ -44,7 +63,9 @@ class Executor
         } elseif (isset($data['table'])) {
             $query = DB::table($data['table']);
         } else {
-            throw new \Exception("Query must specify a 'model' or 'table'.");
+            throw new \Nalrep\Exceptions\QueryGenerationException(
+                "Query must specify a 'model' or 'table'."
+            );
         }
 
         // Apply Steps

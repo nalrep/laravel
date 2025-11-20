@@ -71,7 +71,17 @@ class PromptBuilder
         $format .= "    { \"method\": \"where\", \"args\": [\"status\", \"active\"] },\n";
         $format .= "    { \"method\": \"orderBy\", \"args\": [\"created_at\", \"desc\"] }\n";
         $format .= "  ]\n";
-        $format .= "}\n";
+        $format .= "}\n\n";
+        $format .= "ERROR HANDLING:\n";
+        $format .= "If the user's request is unclear, too vague, or not related to data reporting, return an error response:\n";
+        $format .= "{\n";
+        $format .= "  \"error\": \"vague_prompt\" | \"invalid_prompt\" | \"query_generation_failed\",\n";
+        $format .= "  \"message\": \"A helpful message explaining the issue\"\n";
+        $format .= "}\n\n";
+        $format .= "Error types:\n";
+        $format .= "- vague_prompt: The request is too unclear or lacks specificity\n";
+        $format .= "- invalid_prompt: The request is not related to data reporting or database queries\n";
+        $format .= "- query_generation_failed: You cannot generate a valid query from the available schema\n";
         
         return $format;
     }
