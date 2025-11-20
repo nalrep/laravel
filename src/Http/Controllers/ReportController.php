@@ -5,7 +5,6 @@ namespace Nalrep\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Nalrep\Facades\Nalrep; // We haven't created the Facade yet, but we will
-use Nalrep\NalrepManager;
 
 class ReportController extends Controller
 {

@@ -4,6 +4,38 @@
 
 ---
 
+## 📑 Table of Contents
+
+- [Example Report](#-example-report)
+- [Features](#-features)
+- [How It Works Internally](#-how-it-works-internally)
+- [Installation](#-installation)
+- [Configuration](#️-configuration)
+  - [AI Provider](#1-ai-provider)
+  - [Request Timeout](#2-request-timeout)
+  - [Schema Exclusion](#3-schema-exclusion)
+  - [Model Scanning](#4-model-scanning)
+  - [Common Classes (Auto-Imports)](#5-common-classes-auto-imports)
+  - [Frontend Component Settings](#6-frontend-component-settings)
+  - [PDF Display Mode](#7-pdf-display-mode)
+  - [Safety Settings](#8-safety-settings)
+- [Security Architecture](#-security-architecture)
+- [Usage](#-usage)
+  - [Blade Component](#blade-component)
+  - [Customizing the View](#customizing-the-view)
+  - [Programmatic Usage](#programmatic-usage)
+- [Error Handling](#️-error-handling)
+  - [Exception Types](#exception-types)
+  - [Handling Errors in Your Code](#handling-errors-in-your-code)
+  - [How Errors Are Surfaced](#how-errors-are-surfaced)
+  - [AI Error Detection](#ai-error-detection)
+- [Extensibility](#-extensibility)
+  - [Custom AI Agents](#custom-ai-agents)
+  - [Using PromptBuilder Standalone](#using-promptbuilder-standalone)
+- [License](#-license)
+
+---
+
 ## � Example Report
 
 ![Sample Report](https://github.com/user-attachments/assets/f3dc22b8-173d-47dd-8219-440e3827680a)
