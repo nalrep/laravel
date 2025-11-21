@@ -83,6 +83,8 @@ class NalrepManager
         
         // 3. Validate
         $this->validator->validate($query);
+
+        Log::info($query);
         
         // 4. Execute
         $result = $this->executor->execute($query);
@@ -91,7 +93,21 @@ class NalrepManager
         $data = $result['data'] ?? $result;
         $description = $result['description'] ?? null;
         
+        Log::info('Executor result', [
+            'data_type' => gettype($data),
+            'data_count' => is_countable($data) ? count($data) : 'N/A',
+            'description' => $description,
+        ]);
+        
         // 5. Format
-        return $this->formatter->format($data, $format, $description);
+        $formatted = $this->formatter->format($data, $format, $description);
+        
+        Log::info('Formatted result', [
+            'format' => $format,
+            'result_type' => gettype($formatted),
+            'result_length' => is_string($formatted) ? strlen($formatted) : 'N/A',
+        ]);
+        
+        return $formatted;
     }
 }

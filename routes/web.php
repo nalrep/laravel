@@ -3,6 +3,6 @@
 use Illuminate\Support\Facades\Route;
 use Nalrep\Http\Controllers\ReportController;
 
-Route::group(['middleware' => ['web']], function () {
-    Route::post('/nalrep/generate', [ReportController::class, 'generate'])->name('nalrep.generate');
+Route::prefix('nalrep')->group(function () {
+    Route::post('/generate', [ReportController::class, 'generate'])->name('nalrep.generate');
 });

@@ -1,7 +1,5 @@
 # Nalrep: Natural Language Reporting for Laravel
 
-# Nalrep: Natural Language Reporting for Laravel
-
 [![Latest Stable Version](https://img.shields.io/packagist/v/nalrep/laravel.svg?style=flat&color=4CAF50)](https://packagist.org/packages/nalrep/laravel)
 [![Total Downloads](https://img.shields.io/packagist/dt/nalrep/laravel.svg?style=flat&color=2196F3)](https://packagist.org/packages/nalrep/laravel)
 [![License](https://img.shields.io/packagist/l/nalrep/laravel.svg?style=flat&color=795548)](LICENSE)
@@ -24,7 +22,7 @@
   - [Model Scanning](#4-model-scanning)
   - [Common Classes (Auto-Imports)](#5-common-classes-auto-imports)
   - [Frontend Component Settings](#6-frontend-component-settings)
-  - [PDF Display Mode](#7-pdf-display-mode)
+
   - [Safety Settings](#8-safety-settings)
 - [Security Architecture](#-security-architecture)
 - [Usage](#-usage)
@@ -43,21 +41,25 @@
 
 ---
 
-## � Example Report
+## 📊 Example Report
 
 ![Sample Report](https://github.com/user-attachments/assets/f3dc22b8-173d-47dd-8219-440e3827680a)
 
 *Generate beautiful reports from natural language queries like "Top 5 customers by total purchase revenue"*
 
+![JSON Report](https://github.com/user-attachments/assets/dd9fa530-5bc2-4d90-a687-e97af0067c67)
+
+*Get clean JSON responses for API integrations: "give me list of all users with count of customers served and sales made"*
+
 ---
 
-## �🚀 Features
+## 🚀 Features
 
 -   **Natural Language to SQL**: Convert questions like "Show me top selling products last month" into database queries.
 -   **Safe Execution**: Built-in validation ensures only read-only queries are executed.
 -   **Context-Aware**: Automatically scans your database schema and Eloquent models to provide the AI with accurate context.
 -   **Eloquent Integration**: Intelligently uses your application's Eloquent models (e.g., `\\App\\Models\\Sale`) when available.
--   **Flexible Output**: Returns results as JSON, HTML tables, or PDF reports.
+-   **Flexible Output**: Returns results as JSON or HTML tables. HTML reports can be printed to PDF using browser's print function.
 -   **Multi-Provider Support**: Works with OpenAI, OpenRouter, and Ollama (local LLMs).
 -   **Highly Configurable**: Fine-tune schema visibility, model scanning, and auto-imports.
 
@@ -76,7 +78,7 @@ Validator (read-only, method whitelist)
    ↓
 Interpreter → Laravel Query Builder
    ↓
-Result (HTML / JSON / PDF)
+Result (HTML / JSON)
 ```
 
 ---
@@ -179,16 +181,7 @@ Configure the input component behavior and available formats.
 ],
 ```
 
-### 7. PDF Display Mode
-Configure how PDF reports are displayed.
-
-```php
-'pdf_display_mode' => env('NALREP_PDF_DISPLAY_MODE', 'inline'),
-// 'inline' - Preview in browser with download button (recommended)
-// 'download' - Direct download
-```
-
-### 8. Safety Settings
+### 7. Safety Settings
 Configure the safety guardrails.
 
 ```php
@@ -250,6 +243,8 @@ public function report()
     return view('reports.show', compact('html'));
 }
 ```
+
+
 
 ---
 

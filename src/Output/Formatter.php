@@ -8,14 +8,29 @@ class Formatter
 {
     public function format($data, string $format = 'json', ?string $description = null)
     {
+        // Convert Eloquent Collection to array
         if ($data instanceof Collection) {
             $data = $data->toArray();
+        }
+        
+        // Convert single Eloquent Model to array
+        if (is_object($data) && method_exists($data, 'toArray')) {
+            $data = $data->toArray();
+        }
+        
+        // Handle array of Eloquent models
+        if (is_array($data) && !empty($data)) {
+            $data = array_map(function ($item) {
+                if (is_object($item) && method_exists($item, 'toArray')) {
+                    return $item->toArray();
+                }
+                return $item;
+            }, $data);
         }
 
         return match ($format) {
             'json' => $this->toJson($data, $description),
             'html' => $this->toHtml($data, $description),
-            'pdf' => $this->toPdf($data, $description),
             default => $this->toJson($data, $description),
         };
     }

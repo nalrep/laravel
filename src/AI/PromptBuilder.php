@@ -72,6 +72,16 @@ class PromptBuilder
         $format .= "    { \"method\": \"orderBy\", \"args\": [\"created_at\", \"desc\"] }\n";
         $format .= "  ]\n";
         $format .= "}\n\n";
+        
+        $format .= "IMPORTANT QUERY BUILDING RULES:\n";
+        $format .= "1. DO NOT use withCount(), with(), or any relationship methods unless you are 100% certain the relationship exists\n";
+        $format .= "2. For aggregations (counts, sums) from related tables, use 'select' with raw SQL subqueries instead\n";
+        $format .= "3. Example for counting related records:\n";
+        $format .= "   { \"method\": \"select\", \"args\": [\"*\", {\"type\": \"raw\", \"value\": \"(SELECT COUNT(*) FROM sales WHERE sales.user_id = users.id) AS sales_count\"}] }\n";
+        $format .= "4. For DISTINCT counts:\n";
+        $format .= "   { \"method\": \"select\", \"args\": [\"*\", {\"type\": \"raw\", \"value\": \"(SELECT COUNT(DISTINCT buyer_id) FROM sales WHERE sales.user_id = users.id) AS customers_count\"}] }\n";
+        $format .= "5. Always use table names explicitly in subqueries (e.g., 'users.id', 'sales.user_id')\n\n";
+        
         $format .= "ERROR HANDLING:\n";
         $format .= "If the user's request is unclear, too vague, or not related to data reporting, return an error response:\n";
         $format .= "{\n";
